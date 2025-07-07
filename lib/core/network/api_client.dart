@@ -11,8 +11,9 @@ import '../utils/global.dart';
 
 class ApiClient {
   // GET Method API Call
-  Future<BaseApiResponse> get(String endPoint,
-      ) async {
+  Future<BaseApiResponse> get(
+    String endPoint,
+  ) async {
     final url = Uri.parse("${Urls.baseUrl}$endPoint");
     Map<String, String>? headers = _getHeaders();
     try {
@@ -76,8 +77,35 @@ class ApiClient {
 
   Map<String, String>? _getHeaders() {
     return {
-    "Authorization": "Bearer ${Global.instance.jwtToken}",
-    "Content-Type": 'application/json'
+      "Authorization": "Bearer ${Global.instance.jwtToken}",
+      "Content-Type": 'application/json'
     };
+  }
+
+  Future<BaseApiResponse> tokenGenPost(String endPoint,
+      {required Map<String, dynamic> body}) async {
+    // Step 1: Your credentials
+    const username = 'admin';
+    const password = 'boaz';
+
+    // Step 2: Encode to Base64
+    String basicAuth =
+        'Basic ${base64Encode(utf8.encode('$username:$password'))}';
+
+    final url = Uri.parse("${Urls.baseUrl}$endPoint");
+
+    try {
+      final response = await http.post(url,
+          headers: {
+            "authorization": basicAuth,
+            'Content-Type': 'application/json'
+          },
+          body: jsonEncode(body));
+      return _parseResponse(response);
+    } catch (e, stack) {
+      debugPrint("Exception caught: $e\n$stack");
+      // return FailureResp("Token parsing failed");
+      return _handleError();
+    }
   }
 }
