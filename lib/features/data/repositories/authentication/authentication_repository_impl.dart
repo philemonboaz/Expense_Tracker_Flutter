@@ -6,11 +6,12 @@ import 'package:flutter/cupertino.dart';
 
 import '../../../../core/constants/urls.dart';
 import '../../../../core/network/api_client.dart';
+import '../../../../core/utils/exception_model.dart';
 
 class AuthenticationRepositoryImpl implements AuthenticationRepository {
   final ApiClient apiClient = ApiClient();
   @override
-  Future<Result<TokenModel>> getJwtToken(String deviceId) async {
+  Future<UnifiedResponseWrapper> getJwtToken(String deviceId) async {
     try {
       BaseApiResponse response = await apiClient
           .tokenGenPost(Urls.jwtTokenUrl, body: {"deviceId": deviceId});
@@ -18,11 +19,12 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
       if (response.error == null && response.data is String) {
         return SuccessResp(TokenModel.fromJson(response.data));
       } else {
-        return FailureResp(response.error!.errorMessage);
+        return FailureResp(response.error);
       }
     } catch (e) {
       debugPrint("Error occ $e");
-      return FailureResp(e.toString());
+      return ExceptionResp(getExceptionErrorResp(
+          e is Exception ? e : Exception("Unknown Error")));
     }
   }
 }

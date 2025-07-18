@@ -7,6 +7,7 @@ import '../../../core/utils/app_functions.dart';
 abstract class StateViewModel<S extends StatefulWidget, M extends BaseNotifier>
     extends State<S> {
   late MediaQueryData mediaQueryData;
+
   M? viewModel;
 
   @override

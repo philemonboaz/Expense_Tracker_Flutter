@@ -1,6 +1,7 @@
 import 'package:expense_tracker/core/constants/app_constants.dart';
 import 'package:expense_tracker/features/presentation/common/error_screen.dart';
 import 'package:expense_tracker/features/presentation/common/state_view_model.dart';
+import 'package:expense_tracker/features/presentation/pages/history_screen/history_screen.dart';
 import 'package:expense_tracker/features/presentation/pages/home_screen/home_screen_view_model.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends StateViewModel<HomeScreen, HomeScreenViewModel> {
+  int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context); // Access the current theme
@@ -27,27 +29,44 @@ class _HomeScreenState extends StateViewModel<HomeScreen, HomeScreenViewModel> {
                   appBar: AppFunctions.customAppBar(
                     context: context,
                     headerTitle: "Expenses",
+                    centerTitle: false,
+                    backgroundColor: theme.primaryColor,
+                    titleColor: theme.indicatorColor,
                   ),
-                  body: SizedBox(
-                    height: mediaQueryData.size.height,
-                    width: mediaQueryData.size.height,
-                    child: (viewModel!.getExpenses.isNotEmpty)
-                        ? ListView.builder(
-                            itemCount: viewModel?.getExpenses.length ?? 0,
-                            itemBuilder: (context, index) {
-                              final expense = viewModel?.getExpenses[index];
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 6.0, vertical: 2.0),
-                                child: _dataContainer(expense, theme),
-                              );
-                            },
-                          )
-                        : const Center(
-                            child: Text(
-                              "No Expense Found",
-                            ),
-                          ),
+                  backgroundColor: theme.primaryColor,
+                  body: _selectedIndex == 0
+                      ? SizedBox(
+                          height: mediaQueryData.size.height,
+                          width: mediaQueryData.size.height,
+                          child: (viewModel!.getExpenses.isNotEmpty)
+                              ? ListView.builder(
+                                  itemCount: viewModel?.getExpenses.length ?? 0,
+                                  itemBuilder: (context, index) {
+                                    final expense =
+                                        viewModel?.getExpenses[index];
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 6.0, vertical: 2.0),
+                                      child: _dataContainer(expense, theme),
+                                    );
+                                  },
+                                )
+                              : const Center(
+                                  child: Text(
+                                    "No Expense Found",
+                                  ),
+                                ),
+                        )
+                      : _pages[_selectedIndex],
+                  bottomNavigationBar: BottomNavigationBar(
+                    items: const [
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.home), label: "Home"),
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.history), label: "History")
+                    ],
+                    onTap: _onItemTapped,
+                    currentIndex: _selectedIndex,
                   ),
                 )
               : ErrorScreen(
@@ -65,20 +84,20 @@ class _HomeScreenState extends StateViewModel<HomeScreen, HomeScreenViewModel> {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
         child: Column(
           children: [
             Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  "Title",
-                  style: TextStyle(),
-                ),
-                const SizedBox(
-                  width: 20,
-                ),
+                // const Text(
+                //   "Title",
+                //   style: TextStyle(),
+                // ),
+                // const SizedBox(
+                //   width: 20,
+                // ),
                 Text("${expense?.title}")
               ],
             ),
@@ -86,28 +105,40 @@ class _HomeScreenState extends StateViewModel<HomeScreen, HomeScreenViewModel> {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Amount",
-                  style: TextStyle(color: theme.colorScheme.onPrimary),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    const Text(
+                      "Amount",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    // const SizedBox(
+                    //   width: 20,
+                    // ),
+                    Text(
+                      "${expense?.amount}",
+                      style: const TextStyle(color: Colors.black),
+                    ),
+                  ],
                 ),
                 const SizedBox(
                   width: 20,
                 ),
-                Text(
-                  "${expense?.amount}",
-                  style: TextStyle(color: theme.primaryColor),
-                ),
-                const SizedBox(
-                  width: 20,
-                ),
-                const Text("CreatedAt"),
-                const SizedBox(
-                  width: 20,
-                ),
-                const SizedBox(
-                  width: 20,
-                ),
-                Text("${expense?.createdAt}")
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    const Text("CreatedAt"),
+                    // const SizedBox(
+                    //   width: 20,
+                    // ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Text("${expense?.createdAt}"),
+                  ],
+                )
               ],
             ),
             Row(
@@ -127,6 +158,18 @@ class _HomeScreenState extends StateViewModel<HomeScreen, HomeScreenViewModel> {
     );
   }
 
+  final List<Widget> _pages = const [
+    Center(
+      child: Text("Home"),
+    ),
+    HistoryScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
   // @override
   // buildBody(BuildContext context) {
   //   // TODO: implement buildBody

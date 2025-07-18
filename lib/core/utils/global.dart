@@ -7,7 +7,8 @@ class Global {
   static Global get instance => _instance;
   // Your global variables
   static late String appName;
-  String? jwtToken;
+  static String? jwtToken;
+  static String? deviceId;
 
   factory Global() {
     return _instance;

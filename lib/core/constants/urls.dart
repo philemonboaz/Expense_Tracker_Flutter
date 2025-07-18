@@ -6,4 +6,5 @@ class Urls {
   static const getExpenseUrl = "preloadData/getExpense";
   static const addExpenseUrl = "";
   static const deleteExpenseUrl = "";
+  static const historyByPagination = "expenses/getAllExpensePagination";
 }

@@ -1,5 +1,4 @@
 import 'package:expense_tracker/core/provider/base_notifier.dart';
-import 'package:expense_tracker/features/data/models/authentication/token_model.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../../core/constants/app_constants.dart';
@@ -11,8 +10,8 @@ class SplashScreenViewModel extends BaseNotifier {
   // static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   // final sharedPref = SharedPrefsStorage();
   final GetTokenUsecase getTokenUsecase = GetTokenUsecase();
-  late String jwtToken = "";
-  late final String? deviceId;
+  // late String jwtToken = "";
+  // late final String? deviceId;
 
   @override
   void initModel() {
@@ -36,25 +35,26 @@ class SplashScreenViewModel extends BaseNotifier {
       // } else {
       //   deviceId = null;
       // }
-      deviceId = "52ar234a";
-      if (deviceId != null) {
-        final tokenData = await getTokenUsecase.getJwtToken(deviceId!);
-        if (tokenData is SuccessResp<TokenModel>) {
-          jwtToken = tokenData.data.toString();
-          Global.instance.jwtToken = jwtToken;
-        } else if (tokenData is FailureResp<TokenModel>) {
+      Global.deviceId = "asdsfdgh";
+
+      if (Global.deviceId != null) {
+        final UnifiedResponseWrapper tokenData =
+            await getTokenUsecase.getJwtToken(Global.deviceId!);
+        if (tokenData is SuccessResp) {
+          Global.jwtToken = tokenData.data.toString();
+        } else if (tokenData is FailureResp) {
           apiError = true;
-          apiErrorMessage = tokenData.errMsg;
+          apiErrorMessage = tokenData.errorResponse?.errorMessage;
           notifyListeners();
           setLoading(false);
-          jwtToken = "";
+          Global.jwtToken = "";
         } else {
           debugPrint("Error Occurred parsing");
           apiError = true;
           apiErrorMessage = AppConstants.serverError;
           notifyListeners();
           setLoading(false);
-          jwtToken = "";
+          Global.jwtToken = "";
         }
       }
       setLoading(false);

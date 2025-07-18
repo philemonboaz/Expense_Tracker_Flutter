@@ -6,6 +6,7 @@ import 'package:expense_tracker/core/utils/api_response_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
+import '../constants/constant_enums.dart';
 import '../constants/urls.dart';
 import '../utils/global.dart';
 
@@ -32,8 +33,7 @@ class ApiClient {
 
     try {
       final response = await http.post(url,
-          headers: headers ?? {'Content-Type': 'application/json'},
-          body: jsonEncode(body));
+          headers: headers ?? _getHeaders(), body: jsonEncode(body));
       return _parseResponse(response);
     } catch (e, stack) {
       debugPrint("Exception caught: $e\n$stack");
@@ -50,7 +50,8 @@ class ApiClient {
         return BaseApiResponse.fromJson(decodedResp);
       } else {
         return BaseApiResponse(
-          status: "404",
+          status: Status.error,
+          statusCode: decodedResp["statusCode"],
           message: decodedResp["message"] ?? "Backend Error",
           data: null,
           error: const ApiErrorResponse(
@@ -67,7 +68,8 @@ class ApiClient {
   // Generic Error Response
   BaseApiResponse _handleError() {
     return BaseApiResponse(
-      status: "500",
+      status: Status.error,
+      statusCode: 500,
       message: "Internal Server Error",
       data: null,
       error: const ApiErrorResponse(
@@ -77,7 +79,7 @@ class ApiClient {
 
   Map<String, String>? _getHeaders() {
     return {
-      "Authorization": "Bearer ${Global.instance.jwtToken}",
+      "Authorization": "Bearer ${Global.jwtToken}",
       "Content-Type": 'application/json'
     };
   }
