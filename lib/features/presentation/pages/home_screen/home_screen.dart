@@ -32,6 +32,23 @@ class _HomeScreenState extends StateViewModel<HomeScreen, HomeScreenViewModel> {
                     centerTitle: false,
                     backgroundColor: theme.primaryColor,
                     titleColor: theme.indicatorColor,
+                    onBackPressed: () => false,
+                    isBackPress: false,
+                    listOfActions: [
+                      GestureDetector(
+                        onTap: () => model.goToAddExpenseScreen(context),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 0),
+                          child: Icon(
+                            Icons.add,
+                            size: 30,
+                            color: Theme.of(context).primaryColorLight,
+                          ),
+                        ),
+                      )
+                    ],
+                    isActionsEnabled: true,
                   ),
                   backgroundColor: theme.primaryColor,
                   body: _selectedIndex == 0

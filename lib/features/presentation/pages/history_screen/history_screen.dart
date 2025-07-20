@@ -15,6 +15,7 @@ class _HistoryScreenState
   final ScrollController _scrollController = ScrollController();
   @override
   Widget build(BuildContext context) {
+    MediaQueryData mediaQueryData = const MediaQueryData();
     return uiUpdate(
       builder: (model) => model.isLoading
           ? const Center(
@@ -24,8 +25,73 @@ class _HistoryScreenState
               itemCount: model.historyData.length,
               controller: _scrollController,
               itemBuilder: (context, index) {
-                return Card(
-                  child: Text(model.historyData[index].title),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 4.0, vertical: 4.0),
+                  child: Container(
+                      decoration: BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(8.0)),
+                          color: Theme.of(context).colorScheme.surface),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 4.0, horizontal: 8.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Expense Title: ",
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimary),
+                              ),
+                              Text(model.historyData[index].title),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Description: ",
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimary),
+                              ),
+                              Text(model.historyData[index].description),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Amount Spent: ",
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimary),
+                              ),
+                              Text(model.historyData[index].amount),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "On: ",
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimary),
+                              ),
+                              Text(model.historyData[index].createdAt),
+                            ],
+                          ),
+                        ],
+                      )),
                 );
               },
             ),

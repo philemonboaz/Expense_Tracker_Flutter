@@ -5,6 +5,7 @@ class AddExpenseScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    MediaQueryData mediaQueryData = const MediaQueryData();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
