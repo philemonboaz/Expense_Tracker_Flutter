@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 class AppColors {
   // Light theme Colors
   static const Color primaryLight = Colors.black12;
-  static const Color secondaryLight = Colors.redAccent;
-  static const Color backgroundLight = Color.fromARGB(70, 218, 207, 207);
-  static const Color buttonLight = Colors.blueGrey;
+  static const Color secondaryLight = Color.fromARGB(255, 151, 176, 173);
+  static const Color backgroundLight = Color.fromARGB(255, 86, 108, 103);
+  static const Color buttonLight = Color.fromARGB(70, 56, 50, 50);
   static const Color disabledButtonLight = Colors.grey;
   static const Color primaryLiteLight = Colors.grey;
-  static const Color secondaryLiteLight = Colors.red;
+  static const Color secondaryLiteLight = Color.fromARGB(255, 79, 126, 134);
   static const Color borderLight = Colors.lightBlue;
   static const Color textLight = Colors.black;
   static const Color textLiteLight = Colors.black38;
@@ -20,7 +20,7 @@ class AppColors {
 
   // Dark theme Colors
   static const Color primaryDark = Colors.white10;
-  static const Color secondaryDark = Colors.redAccent;
+  static const Color secondaryDark = Color.fromARGB(70, 5, 4, 4);
   static const Color backgroundDark = Color.fromARGB(70, 56, 50, 50);
   static const Color buttonDark = Colors.blueGrey;
   static const Color disabledButtonDark = Colors.grey;

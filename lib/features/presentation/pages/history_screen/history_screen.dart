@@ -15,7 +15,6 @@ class _HistoryScreenState
   final ScrollController _scrollController = ScrollController();
   @override
   Widget build(BuildContext context) {
-    MediaQueryData mediaQueryData = const MediaQueryData();
     return uiUpdate(
       builder: (model) => model.isLoading
           ? const Center(

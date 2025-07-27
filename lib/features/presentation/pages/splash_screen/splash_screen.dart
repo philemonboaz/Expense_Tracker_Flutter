@@ -2,7 +2,6 @@ import 'package:expense_tracker/features/presentation/common/state_view_model.da
 import 'package:expense_tracker/features/presentation/pages/home_screen/home_screen.dart';
 import 'package:expense_tracker/features/presentation/pages/splash_screen/splash_screen_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 import '../../../../core/constants/app_assets.dart';
 
@@ -42,8 +41,8 @@ class _SplashScreenState
                     ),
                     child: Image.asset(AppAssets.logo),
                   ),
-                  SvgPicture.asset(AppAssets.logo),
-                  const CircularProgressIndicator(),
+                  // SvgPicture.asset(AppAssets.logo),
+                  // const CircularProgressIndicator(),
                 ],
               ),
             )

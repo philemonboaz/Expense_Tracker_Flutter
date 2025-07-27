@@ -1,6 +1,9 @@
-import '../../data/models/expense_models/add_expense_model.dart';
+import 'package:expense_tracker/core/utils/unified_response_wrapper.dart';
 
 abstract class ExpenseRepository {
-  Future<AddExpenseModel> addExpense(
-      String title, String? subTitle, String? description, double amount);
+  Future<UnifiedResponseWrapper> addExpense(
+      {required String title,
+      required String dateOfExpense,
+      required String description,
+      required String amount});
 }

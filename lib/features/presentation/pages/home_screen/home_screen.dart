@@ -16,6 +16,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends StateViewModel<HomeScreen, HomeScreenViewModel> {
   int _selectedIndex = 0;
+  final TextEditingController _dateController = TextEditingController();
+  final _todaysDate = DateTime.now();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _dateController.text =
+        "${_todaysDate.year}-${_todaysDate.month}-${_todaysDate.day}";
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context); // Access the current theme
@@ -46,17 +57,32 @@ class _HomeScreenState extends StateViewModel<HomeScreen, HomeScreenViewModel> {
                             color: Theme.of(context).primaryColorLight,
                           ),
                         ),
-                      )
+                      ),
+                      if (_selectedIndex == 0)
+                        GestureDetector(
+                          onTap: () => _filterRecords(model),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 0),
+                            child: Icon(
+                              Icons.filter_alt_sharp,
+                              size: 30,
+                              color: Theme.of(context).primaryColorLight,
+                            ),
+                          ),
+                        )
                     ],
                     isActionsEnabled: true,
                   ),
                   backgroundColor: theme.primaryColor,
                   body: _selectedIndex == 0
-                      ? SizedBox(
-                          height: mediaQueryData.size.height,
-                          width: mediaQueryData.size.height,
-                          child: (viewModel!.getExpenses.isNotEmpty)
-                              ? ListView.builder(
+                      ? (viewModel!.getExpenses.isNotEmpty)
+                          ? Column(
+                              children: [
+                                ListView.builder(
+                                  scrollDirection: Axis.vertical,
+                                  shrinkWrap: true,
+                                  physics: const BouncingScrollPhysics(),
                                   itemCount: viewModel?.getExpenses.length ?? 0,
                                   itemBuilder: (context, index) {
                                     final expense =
@@ -67,13 +93,14 @@ class _HomeScreenState extends StateViewModel<HomeScreen, HomeScreenViewModel> {
                                       child: _dataContainer(expense, theme),
                                     );
                                   },
-                                )
-                              : const Center(
-                                  child: Text(
-                                    "No Expense Found",
-                                  ),
                                 ),
-                        )
+                              ],
+                            )
+                          : const Center(
+                              child: Text(
+                                "No Expense Found",
+                              ),
+                            )
                       : _pages[_selectedIndex],
                   bottomNavigationBar: BottomNavigationBar(
                     items: const [
@@ -86,9 +113,13 @@ class _HomeScreenState extends StateViewModel<HomeScreen, HomeScreenViewModel> {
                     currentIndex: _selectedIndex,
                   ),
                 )
-              : ErrorScreen(
-                  errorMessage: model.apiErrorMessage,
-                  errorScreenTitle: AppConstants.serverError),
+              : Scaffold(
+                  body: Center(
+                    child: ErrorScreen(
+                        errorMessage: model.apiErrorMessage,
+                        errorScreenTitle: AppConstants.serverError),
+                  ),
+                ),
     );
   }
 
@@ -102,72 +133,88 @@ class _HomeScreenState extends StateViewModel<HomeScreen, HomeScreenViewModel> {
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
-        child: Column(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // const Text(
-                //   "Title",
-                //   style: TextStyle(),
-                // ),
-                // const SizedBox(
-                //   width: 20,
-                // ),
-                Text("${expense?.title}")
-              ],
+            Expanded(
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // const Text(
+                      //   "Title",
+                      //   style: TextStyle(),
+                      // ),
+                      // const SizedBox(
+                      //   width: 20,
+                      // ),
+                      Text("${expense?.title}")
+                    ],
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          const Text(
+                            "Amount",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          // const SizedBox(
+                          //   width: 20,
+                          // ),
+                          Text(
+                            "${expense?.amount}",
+                            style: const TextStyle(color: Colors.black),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          const Text("CreatedAt"),
+                          // const SizedBox(
+                          //   width: 20,
+                          // ),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          Text("${expense?.createdAt}"),
+                        ],
+                      )
+                    ],
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("Description"),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      Text("${expense?.description}")
+                    ],
+                  )
+                ],
+              ),
             ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    const Text(
-                      "Amount",
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    // const SizedBox(
-                    //   width: 20,
-                    // ),
-                    Text(
-                      "${expense?.amount}",
-                      style: const TextStyle(color: Colors.black),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  width: 20,
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    const Text("CreatedAt"),
-                    // const SizedBox(
-                    //   width: 20,
-                    // ),
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    Text("${expense?.createdAt}"),
-                  ],
-                )
-              ],
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text("Description"),
-                const SizedBox(
-                  width: 20,
-                ),
-                Text("${expense?.description}")
-              ],
+            GestureDetector(
+              onTap: () {
+                // return DropDownButton<
+              },
+              child: const Icon(
+                Icons.menu_outlined,
+                size: 40,
+              ),
             )
           ],
         ),
@@ -187,91 +234,37 @@ class _HomeScreenState extends StateViewModel<HomeScreen, HomeScreenViewModel> {
       _selectedIndex = index;
     });
   }
-  // @override
-  // buildBody(BuildContext context) {
-  //   // TODO: implement buildBody
-  //   return !viewModel!.isLoading
-  //       ? SizedBox(
-  //           height: mediaQueryData.size.height,
-  //           width: mediaQueryData.size.height,
-  //           child: (viewModel!.getExpenses.isNotEmpty)
-  //               ? ListView.builder(
-  //                   itemCount: viewModel?.getExpenses.length ?? 0,
-  //                   itemBuilder: (context, index) {
-  //                     final expense = viewModel?.getExpenses[index];
-  //                     return Padding(
-  //                       padding: const EdgeInsets.symmetric(
-  //                           horizontal: 6.0, vertical: 2.0),
-  //                       child: Card(
-  //                         shape: const RoundedRectangleBorder(
-  //                           borderRadius: BorderRadius.all(
-  //                             Radius.circular(8),
-  //                           ),
-  //                         ),
-  //                         child: Padding(
-  //                           padding: const EdgeInsets.all(8.0),
-  //                           child: Column(
-  //                             children: [
-  //                               Row(
-  //                                 mainAxisSize: MainAxisSize.min,
-  //                                 mainAxisAlignment:
-  //                                     MainAxisAlignment.spaceBetween,
-  //                                 children: [
-  //                                   const Text("Title"),
-  //                                   const SizedBox(
-  //                                     width: 20,
-  //                                   ),
-  //                                   Text("${expense?.title}")
-  //                                 ],
-  //                               ),
-  //                               Row(
-  //                                 mainAxisSize: MainAxisSize.min,
-  //                                 mainAxisAlignment:
-  //                                     MainAxisAlignment.spaceBetween,
-  //                                 children: [
-  //                                   const Text("Amount"),
-  //                                   const SizedBox(
-  //                                     width: 20,
-  //                                   ),
-  //                                   Text("${expense?.amount}"),
-  //                                   const SizedBox(
-  //                                     width: 20,
-  //                                   ),
-  //                                   const Text("CreatedAt"),
-  //                                   const SizedBox(
-  //                                     width: 20,
-  //                                   ),
-  //                                   const SizedBox(
-  //                                     width: 20,
-  //                                   ),
-  //                                   Text("${expense?.createdAt}")
-  //                                 ],
-  //                               ),
-  //                               Row(
-  //                                 mainAxisSize: MainAxisSize.min,
-  //                                 mainAxisAlignment:
-  //                                     MainAxisAlignment.spaceBetween,
-  //                                 children: [
-  //                                   const Text("Description"),
-  //                                   const SizedBox(
-  //                                     width: 20,
-  //                                   ),
-  //                                   Text("${expense?.description}")
-  //                                 ],
-  //                               )
-  //                             ],
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     );
-  //                   },
-  //                 )
-  //               : const Center(
-  //                   child: Text("No Expense Found"),
-  //                 ),
-  //         )
-  //       : const Center(
-  //           child: CircularProgressIndicator(),
-  //         );
-  // }
+
+  void _filterRecords(HomeScreenViewModel model) async {
+    final result = await showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return TextFormField(
+          onTap: () async {
+            final selectedDate = await showDatePicker(
+                context: context,
+                firstDate: DateTime(DateTime.now().year - 1),
+                lastDate: DateTime.now());
+          },
+          style: TextStyle(
+              backgroundColor: Theme.of(context).primaryColorLight,
+              fontSize: 20,
+              fontWeight: FontWeight.w500),
+          controller: _dateController,
+          decoration: InputDecoration(
+            hintText: "Pick the month",
+            label: const Text("Month"),
+            suffixIcon: Icon(
+              Icons.date_range,
+              color: Theme.of(context).primaryColorDark,
+              size: 30,
+              fill: 1,
+            ),
+          ),
+        );
+      },
+    );
+
+    model.getRecordsByMonthsForScreens(_dateController.text);
+  }
 }

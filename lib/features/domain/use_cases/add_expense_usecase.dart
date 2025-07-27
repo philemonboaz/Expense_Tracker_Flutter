@@ -1,12 +1,21 @@
-import 'package:expense_tracker/features/data/models/expense_models/add_expense_model.dart';
 import 'package:expense_tracker/features/data/repositories/expense_repository_impls/add_expense_repository_impl.dart';
 
+import '../../../core/utils/unified_response_wrapper.dart';
+
 class AddExpenseUseCase {
-  final AddExpenseRepositoryImpl addExpenseRepositoryImpl;
-  AddExpenseUseCase(this.addExpenseRepositoryImpl);
-  Future<AddExpenseModel> addExpenseApi(
-      double amount, String title, String? subTitle, String? description) {
+  AddExpenseUseCase();
+  final AddExpenseRepositoryImpl addExpenseRepositoryImpl =
+      AddExpenseRepositoryImpl();
+  Future<UnifiedResponseWrapper> addExpenseApi(
+      {required String amount,
+      required String title,
+      required String description,
+      required String dateOfExpense}) {
     return addExpenseRepositoryImpl.addExpense(
-        title, subTitle, description, amount);
+      title: title,
+      amount: amount,
+      description: description,
+      dateOfExpense: dateOfExpense,
+    );
   }
 }

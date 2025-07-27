@@ -3,8 +3,10 @@ class Urls {
   static const baseUrl = "http://10.0.2.2:9090/api/";
 
   static const jwtTokenUrl = "genToken";
-  static const getExpenseUrl = "preloadData/getExpense";
-  static const addExpenseUrl = "";
+  // static const getExpenseUrl = "preloadData/getExpense";
+  static const getExpenseUrl = "expenses/getExpenseByDate";
+
   static const deleteExpenseUrl = "";
   static const historyByPagination = "expenses/getAllExpensePagination";
+  static const addExpenseUrl = "expenses/addExpense";
 }

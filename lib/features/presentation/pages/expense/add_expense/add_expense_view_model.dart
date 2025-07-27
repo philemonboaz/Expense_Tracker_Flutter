@@ -1,22 +1,45 @@
+import 'package:expense_tracker/core/constants/constant_enums.dart';
 import 'package:expense_tracker/core/provider/base_notifier.dart';
+import 'package:expense_tracker/core/utils/unified_response_wrapper.dart';
 import 'package:expense_tracker/features/domain/use_cases/add_expense_usecase.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
-class AddExpenseProvider extends BaseNotifier {
-  final AddExpenseUseCase addExpenseUseCase;
+class AddExpenseViewModel extends BaseNotifier {
+  AddExpenseViewModel();
+  final AddExpenseUseCase addExpenseUseCase = AddExpenseUseCase();
 
-  AddExpenseProvider(this.addExpenseUseCase);
+  @override
+  initModel() {
+    super.initModel();
+    setLoading(false);
+  }
 
-  Future<void> addExpense(double amount, String title, String? subTitle,
-      String? description) async {
+  Future<void> addExpense(
+      {required BuildContext ctx,
+      required String amount,
+      required String title,
+      required String dateOfExpense,
+      required String description}) async {
     try {
       setLoading(true); // ✅ This will access _isLoading from BaseNotifier
-      await addExpenseUseCase.addExpenseApi(
-          amount, title, subTitle, description);
-      await Future.delayed(const Duration(seconds: 2));
+      UnifiedResponseWrapper apiResponse =
+          await addExpenseUseCase.addExpenseApi(
+              amount: amount,
+              title: title,
+              description: description,
+              dateOfExpense: dateOfExpense);
+      // await Future.delayed(const Duration(seconds: 2));
+      if (apiResponse is SuccessResp) {
+        Navigator.pop(ctx, Status.success);
+        debugPrint("Successfully updated in the table");
+      } else {
+        debugPrint("Failure on update to the table");
+        Navigator.pop(ctx, Status.error);
+      }
       setLoading(false);
     } catch (e) {
       setLoading(false);
+      Navigator.pop(ctx, Status.exception);
       debugPrint("Error: $e");
     }
   }

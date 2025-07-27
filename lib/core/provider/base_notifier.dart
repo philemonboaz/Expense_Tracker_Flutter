@@ -1,4 +1,3 @@
-import 'package:expense_tracker/core/utils/unified_response_wrapper.dart';
 import 'package:flutter/material.dart';
 
 abstract class BaseNotifier extends ChangeNotifier {
