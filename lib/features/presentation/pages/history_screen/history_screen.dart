@@ -28,69 +28,66 @@ class _HistoryScreenState
                   padding: const EdgeInsets.symmetric(
                       horizontal: 4.0, vertical: 4.0),
                   child: Container(
-                      decoration: BoxDecoration(
-                          shape: BoxShape.rectangle,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(8.0)),
-                          color: Theme.of(context).colorScheme.surface),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 4.0, horizontal: 8.0),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Expense Title: ",
-                                style: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onPrimary),
-                              ),
-                              Text(model.historyData[index].title),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Description: ",
-                                style: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onPrimary),
-                              ),
-                              Text(model.historyData[index].description),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Amount Spent: ",
-                                style: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onPrimary),
-                              ),
-                              Text(model.historyData[index].amount),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "On: ",
-                                style: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onPrimary),
-                              ),
-                              Text(model.historyData[index].createdAt),
-                            ],
-                          ),
-                        ],
-                      )),
+                    decoration: BoxDecoration(
+                        shape: BoxShape.rectangle,
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(8.0)),
+                        color: Theme.of(context).colorScheme.surface),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 4.0, horizontal: 8.0),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Expense Title: ",
+                              style: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary),
+                            ),
+                            Text(model.historyData[index].title),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Description: ",
+                              style: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary),
+                            ),
+                            Text(model.historyData[index].description),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Amount Spent: ",
+                              style: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary),
+                            ),
+                            Text(model.historyData[index].amount),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "On: ",
+                              style: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary),
+                            ),
+                            Text(model.historyData[index].createdAt),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                 );
               },
             ),

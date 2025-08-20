@@ -13,8 +13,10 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   @override
   Future<UnifiedResponseWrapper> getJwtToken(String deviceId) async {
     try {
-      BaseApiResponse response = await apiClient
-          .tokenGenPost(Urls.jwtTokenUrl, body: {"deviceId": deviceId},);
+      BaseApiResponse response = await apiClient.tokenGenPost(
+        Urls.jwtTokenUrl,
+        body: {"deviceId": deviceId},
+      );
 
       if (response.error == null && response.data is String) {
         return SuccessResp(TokenModel.fromJson(response.data));

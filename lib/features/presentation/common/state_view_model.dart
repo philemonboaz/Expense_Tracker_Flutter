@@ -6,26 +6,26 @@ import '../../../core/utils/app_functions.dart';
 
 abstract class StateViewModel<S extends StatefulWidget, M extends BaseNotifier>
     extends State<S> {
-  late MediaQueryData mediaQueryData;
-
   M? viewModel;
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(
-      Duration.zero,
-      () {
-        viewModel = Provider.of<M>(context, listen: false);
-        initScreen();
-      },
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(
+        Duration.zero,
+        () {
+          viewModel = Provider.of<M>(context, listen: false);
+          initScreen();
+          debugPrint("Inside the state view model dummy print");
+        },
+      );
+    });
   }
 
   @mustCallSuper
   void initScreen() {
     viewModel?.initModel();
-    mediaQueryData = MediaQuery.of(context);
   }
 
   Widget? buildFloatingActionButton() => null;
@@ -37,7 +37,6 @@ abstract class StateViewModel<S extends StatefulWidget, M extends BaseNotifier>
     debugPrint(
         "BUILD METHOD TRIGGERED inside the stateviewmodel"); // Check if this appears in logs
 
-    mediaQueryData = MediaQuery.of(context);
     return uiUpdate(
       builder: (model) => Scaffold(
         extendBodyBehindAppBar: false,

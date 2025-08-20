@@ -1,9 +1,10 @@
-import 'package:expense_tracker/features/presentation/common/state_view_model.dart';
-import 'package:expense_tracker/features/presentation/pages/home_screen/home_screen.dart';
-import 'package:expense_tracker/features/presentation/pages/splash_screen/splash_screen_view_model.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_assets.dart';
+import '../../../../core/utils/global.dart';
+import '../../../../core/utils/unified_response_wrapper.dart';
+import '../../../domain/use_cases/authentication/get_token_usecase.dart';
+import '../home_screen/home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -12,43 +13,83 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState
-    extends StateViewModel<SplashScreen, SplashScreenViewModel> {
+class _SplashScreenState extends State<SplashScreen> {
+  final GetTokenUsecase _getTokenUsecase = GetTokenUsecase();
+  bool _didInit = false;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    // Run once, after first frame so `context` is safe
+    WidgetsBinding.instance.addPostFrameCallback((_) => _init());
+  }
+
+  Future<void> _init() async {
+    if (_didInit) return; // guard against multiple calls
+    _didInit = true;
+
+    try {
+      Global.deviceId = "devA"; // TODO: real device id
+
+      if (Global.deviceId == null) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No device id')),
+        );
+        return;
+      }
+
+      final UnifiedResponseWrapper tokenData =
+          await _getTokenUsecase.getJwtToken(Global.deviceId!);
+
+      // Always check before using context after awaits
+      if (!mounted) return;
+
+      if (tokenData is SuccessResp) {
+        Global.jwtToken = tokenData.data.toString();
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      } else if (tokenData is FailureResp) {
+        Global.jwtToken = "";
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error getting token')),
+        );
+      } else {
+        Global.jwtToken = "";
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Unexpected response')),
+        );
+      }
+    } catch (e, st) {
+      debugPrint('Splash init error: $e\n$st');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Something went wrong')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    //   initialize the app needs.
-    return uiUpdate(
-      builder: (model) => model.isLoading
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    constraints: const BoxConstraints(
-                        maxHeight: 300,
-                        maxWidth: 300,
-                        minHeight: 250,
-                        minWidth: 250),
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                    ),
-                    child: Image.asset(AppAssets.logo),
-                  ),
-                  // SvgPicture.asset(AppAssets.logo),
-                  // const CircularProgressIndicator(),
-                ],
-              ),
-            )
-          : const Scaffold(
-              body: HomeScreen(),
-            ),
+    return Scaffold(
+      // <-- provide a Scaffold so SnackBars work
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+              maxHeight: 300, maxWidth: 300, minHeight: 250, minWidth: 250),
+          child: const ClipOval(child: _Logo()),
+        ),
+      ),
     );
+  }
+}
+
+class _Logo extends StatelessWidget {
+  const _Logo();
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(AppAssets.logo);
   }
 }

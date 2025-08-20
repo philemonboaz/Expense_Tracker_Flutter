@@ -6,7 +6,7 @@ import 'package:expense_tracker/features/domain/entities/get_expense_entity.dart
 import '../../../../core/utils/common_helper_functions.dart';
 
 class HomeScreenUseCase {
-  Future<UnifiedResponseWrapper> getExpenseApi({required String date}) async {
+  Future<UnifiedResponseWrapper> getExpenseApi(String date) async {
     List<GetExpenseEntity> result = [];
     UnifiedResponseWrapper response =
         await HomeScreenRepositoryImpl().getExpense(date: date);

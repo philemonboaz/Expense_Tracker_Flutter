@@ -5,27 +5,38 @@ import 'package:expense_tracker/features/domain/entities/get_expense_entity.dart
 import 'package:expense_tracker/features/domain/use_cases/home_screen/home_screen_usecase.dart';
 import 'package:expense_tracker/features/presentation/pages/expense/add_expense/add_expense_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../core/constants/constant_enums.dart';
 import '../../../../core/utils/common_widgets.dart';
 
 class HomeScreenViewModel extends BaseNotifier {
   List<GetExpenseEntity> getExpenses = [];
-
+  late String _initialDate;
+  late DateTime _todayDate;
   @override
   void initModel() {
     // TODO: implement initModel
-    getExpense(
-        (DateFormat("yyyy-MM-dd", DateTime.now().toString())).toString());
     super.initModel();
+    // getExpense("2025-07-27");
+    _todayDate = DateTime.now();
+    _initialDate =
+        "${_todayDate.year}-${_dateFormatting(_todayDate.month.toString())}-${_dateFormatting(_todayDate.day.toString())}";
+    getExpense(_initialDate);
+  }
+
+  String _dateFormatting(String num) {
+    if (num.length == 1) {
+      return "0$num";
+    } else {
+      return num;
+    }
   }
 
   Future<void> getExpense(String date) async {
     try {
       setLoading(true);
       UnifiedResponseWrapper apiResponse =
-          await HomeScreenUseCase().getExpenseApi(date: "2025-07-27");
+          await HomeScreenUseCase().getExpenseApi(date);
       if (apiResponse is SuccessResp) {
         getExpenses = apiResponse.data;
       } else if (apiResponse is FailureResp) {
@@ -52,6 +63,7 @@ class HomeScreenViewModel extends BaseNotifier {
 
     if (result == Status.success) {
       if (ctx.mounted) {
+        await getExpense(_initialDate);
         customSnackBar(
           ctx: ctx,
           backgroundColor: Theme.of(ctx).primaryColorDark,
@@ -84,6 +96,10 @@ class HomeScreenViewModel extends BaseNotifier {
   }
 
   void getRecordsByMonthsForScreens(String date) {
-    getExpense(date);
+    if (date.isNotEmpty) {
+      getExpense(date);
+    } else {
+      return;
+    }
   }
 }

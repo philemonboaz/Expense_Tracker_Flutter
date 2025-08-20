@@ -4,6 +4,7 @@ import 'package:expense_tracker/features/presentation/common/state_view_model.da
 import 'package:expense_tracker/features/presentation/pages/history_screen/history_screen.dart';
 import 'package:expense_tracker/features/presentation/pages/home_screen/home_screen_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/utils/app_functions.dart';
 
@@ -17,15 +18,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends StateViewModel<HomeScreen, HomeScreenViewModel> {
   int _selectedIndex = 0;
   final TextEditingController _dateController = TextEditingController();
-  final _todaysDate = DateTime.now();
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _dateController.text =
-        "${_todaysDate.year}-${_todaysDate.month}-${_todaysDate.day}";
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,33 +37,35 @@ class _HomeScreenState extends StateViewModel<HomeScreen, HomeScreenViewModel> {
                     titleColor: theme.indicatorColor,
                     onBackPressed: () => false,
                     isBackPress: false,
-                    listOfActions: [
-                      GestureDetector(
-                        onTap: () => model.goToAddExpenseScreen(context),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 0),
-                          child: Icon(
-                            Icons.add,
-                            size: 30,
-                            color: Theme.of(context).primaryColorLight,
-                          ),
-                        ),
-                      ),
-                      if (_selectedIndex == 0)
-                        GestureDetector(
-                          onTap: () => _filterRecords(model),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 0),
-                            child: Icon(
-                              Icons.filter_alt_sharp,
-                              size: 30,
-                              color: Theme.of(context).primaryColorLight,
+                    listOfActions: (_selectedIndex == 0)
+                        ? [
+                            GestureDetector(
+                              onTap: () => model.goToAddExpenseScreen(context),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0, vertical: 0),
+                                child: Icon(
+                                  Icons.add,
+                                  size: 30,
+                                  color: Theme.of(context).primaryColorLight,
+                                ),
+                              ),
                             ),
-                          ),
-                        )
-                    ],
+                            // if (_selectedIndex == 0)
+                            GestureDetector(
+                              onTap: () => _filterRecords(context, model),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0, vertical: 0),
+                                child: Icon(
+                                  Icons.filter_alt_sharp,
+                                  size: 30,
+                                  color: Theme.of(context).primaryColorLight,
+                                ),
+                              ),
+                            )
+                          ]
+                        : null,
                     isActionsEnabled: true,
                   ),
                   backgroundColor: theme.primaryColor,
@@ -96,9 +90,13 @@ class _HomeScreenState extends StateViewModel<HomeScreen, HomeScreenViewModel> {
                                 ),
                               ],
                             )
-                          : const Center(
+                          : Center(
                               child: Text(
-                                "No Expense Found",
+                                "No Expenses Found",
+                                style: TextStyle(
+                                  color: Theme.of(context).secondaryHeaderColor,
+                                  fontSize: 20,
+                                ),
                               ),
                             )
                       : _pages[_selectedIndex],
@@ -114,6 +112,17 @@ class _HomeScreenState extends StateViewModel<HomeScreen, HomeScreenViewModel> {
                   ),
                 )
               : Scaffold(
+                  appBar: AppFunctions.customAppBar(
+                    context: context,
+                    headerTitle: "Expenses",
+                    centerTitle: false,
+                    backgroundColor: theme.primaryColor,
+                    titleColor: theme.indicatorColor,
+                    onBackPressed: () => false,
+                    isBackPress: false,
+                    listOfActions: [],
+                    isActionsEnabled: true,
+                  ),
                   body: Center(
                     child: ErrorScreen(
                         errorMessage: model.apiErrorMessage,
@@ -142,16 +151,7 @@ class _HomeScreenState extends StateViewModel<HomeScreen, HomeScreenViewModel> {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // const Text(
-                      //   "Title",
-                      //   style: TextStyle(),
-                      // ),
-                      // const SizedBox(
-                      //   width: 20,
-                      // ),
-                      Text("${expense?.title}")
-                    ],
+                    children: [Text("${expense?.title}")],
                   ),
                   Row(
                     mainAxisSize: MainAxisSize.min,
@@ -235,36 +235,104 @@ class _HomeScreenState extends StateViewModel<HomeScreen, HomeScreenViewModel> {
     });
   }
 
-  void _filterRecords(HomeScreenViewModel model) async {
-    final result = await showModalBottomSheet(
-      context: context,
+  void _filterRecords(BuildContext ctx, HomeScreenViewModel model) async {
+    DateTime? pickedDate;
+    await showModalBottomSheet(
+      context: ctx,
       builder: (context) {
-        return TextFormField(
-          onTap: () async {
-            final selectedDate = await showDatePicker(
-                context: context,
-                firstDate: DateTime(DateTime.now().year - 1),
-                lastDate: DateTime.now());
-          },
-          style: TextStyle(
-              backgroundColor: Theme.of(context).primaryColorLight,
-              fontSize: 20,
-              fontWeight: FontWeight.w500),
-          controller: _dateController,
-          decoration: InputDecoration(
-            hintText: "Pick the month",
-            label: const Text("Month"),
-            suffixIcon: Icon(
-              Icons.date_range,
-              color: Theme.of(context).primaryColorDark,
-              size: 30,
-              fill: 1,
-            ),
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+          constraints:
+              const BoxConstraints(maxHeight: 200, maxWidth: double.infinity),
+          decoration: const BoxDecoration(
+              // border: Border.all(style: BorderStyle.solid),
+              shape: BoxShape.rectangle,
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(12), topRight: Radius.circular(12))),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                child: Text(
+                  "Filter By Month",
+                  style: TextStyle(
+                      color: Theme.of(ctx).secondaryHeaderColor,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 20),
+                ),
+              ),
+              Divider(
+                height: 1,
+                color: Theme.of(ctx).dividerColor,
+                thickness: 0.5,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 20.0, horizontal: 12.0),
+                child: TextFormField(
+                  onTap: () async {
+                    pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(DateTime.now().year - 1),
+                        lastDate: DateTime.now());
+                  },
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.w500),
+                  controller: _dateController,
+                  onTapOutside: (event) => () {},
+                  keyboardType: TextInputType.none,
+                  cursorColor: Theme.of(ctx).primaryColor,
+                  decoration: InputDecoration(
+                    hintText: "Pick the month",
+                    label: Text(
+                      "Month",
+                      style:
+                          TextStyle(color: Theme.of(ctx).secondaryHeaderColor),
+                    ),
+                    alignLabelWithHint: true,
+                    fillColor: Theme.of(ctx).focusColor,
+                    suffixIcon: Icon(
+                      Icons.date_range,
+                      color: Theme.of(context).primaryColorDark,
+                      size: 30,
+                      fill: 1,
+                    ),
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(ctx).scaffoldBackgroundColor,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      "Apply filter",
+                      style: TextStyle(
+                          color: Theme.of(ctx).secondaryHeaderColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400),
+                    ),
+                  ),
+                ),
+              )
+            ],
           ),
         );
       },
     );
 
-    model.getRecordsByMonthsForScreens(_dateController.text);
+    String formattedDate = DateFormat("yyyy-MM-dd").format(pickedDate!);
+    _dateController.text = formattedDate;
+    model.getRecordsByMonthsForScreens(formattedDate);
   }
 }
